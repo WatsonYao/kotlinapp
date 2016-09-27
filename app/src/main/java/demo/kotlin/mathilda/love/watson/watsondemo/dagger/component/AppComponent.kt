@@ -5,8 +5,8 @@ package demo.kotlin.mathilda.love.watson.watsondemo.dagger.component
  */
 import dagger.Component
 import demo.kotlin.mathilda.love.watson.watsondemo.MyApplication
-import demo.kotlin.mathilda.love.watson.watsondemo.activity.MainActivity
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.AndroidModule
+import demo.kotlin.mathilda.love.watson.watsondemo.model.ApiSp
 import javax.inject.Singleton
 
 /**
@@ -14,9 +14,9 @@ import javax.inject.Singleton
  */
 @Singleton
 @Component(modules = arrayOf(AndroidModule::class))
-interface ApplicationComponent {
+interface AppComponent {
 
-    fun inject(application: MyApplication)
+    fun app(): MyApplication
 
-    fun inject(mainActivity: MainActivity)
+    fun apiSp(): ApiSp
 }

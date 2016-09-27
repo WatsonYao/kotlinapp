@@ -7,8 +7,9 @@ import android.view.Menu
 import android.view.MenuItem
 import demo.kotlin.mathilda.love.watson.watsondemo.WLog
 import demo.kotlin.mathilda.love.watson.watsondemo.R
-import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.ApplicationComponent
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.AppComponent
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.DaggerUserComponent
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.ActivityModule
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.UserInfoModule
 import demo.kotlin.mathilda.love.watson.watsondemo.model.User
 import demo.kotlin.mathilda.love.watson.watsondemo.model.appErrors.AppError
@@ -23,15 +24,17 @@ import rx.schedulers.Schedulers
 import javax.inject.Inject
 
 class MainActivity : BaseActivity(), UserView {
-    override fun setupActivityComponent(appComponent: ApplicationComponent) {
-//        MyApplication.graph.inject(this)
+
+    override fun setupActivityComponent(appComponent: AppComponent) {
         DaggerUserComponent.builder()
+                .appComponent(appComponent)
+                .activityModule(ActivityModule(this))
                 .userInfoModule(UserInfoModule())
                 .build().inject(this)
     }
 
-
     override fun showUser(user: User) {
+
     }
 
     override fun showError(e: AppError) {
@@ -40,7 +43,6 @@ class MainActivity : BaseActivity(), UserView {
 
     @Inject
     lateinit var presenter: UserPresenter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

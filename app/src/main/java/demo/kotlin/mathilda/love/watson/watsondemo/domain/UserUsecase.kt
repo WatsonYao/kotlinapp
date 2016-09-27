@@ -1,7 +1,10 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.domain
 
+import demo.kotlin.mathilda.love.watson.watsondemo.model.BaseResponse
 import demo.kotlin.mathilda.love.watson.watsondemo.model.User
 import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.Repository
+import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.RestRepository
+import rx.Observable
 import javax.inject.Inject
 
 /**
@@ -9,14 +12,19 @@ import javax.inject.Inject
  */
 class UserUsecase : Usecase {
 
-    //    lateinit var repository: Repository
-//
-    @Inject
-    constructor() {
+    lateinit var repository: RestRepository
 
+    //
+    @Inject
+    constructor(repository: RestRepository) {
+        this.repository = repository
     }
 
     fun getUser(): User {
         return User("a", 1)
+    }
+
+    fun geek(name: String): Observable<BaseResponse> {
+        return repository.geek(name)
     }
 }

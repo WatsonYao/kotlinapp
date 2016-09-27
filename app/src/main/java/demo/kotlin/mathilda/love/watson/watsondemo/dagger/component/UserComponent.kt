@@ -6,6 +6,7 @@ package demo.kotlin.mathilda.love.watson.watsondemo.dagger.component
 import dagger.Component
 import demo.kotlin.mathilda.love.watson.watsondemo.activity.MainActivity
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.ForActivity
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.ActivityModule
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.UserInfoModule
 
 /**
@@ -13,8 +14,11 @@ import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.UserInfoModule
  */
 @ForActivity
 @Component(
+        dependencies = arrayOf(AppComponent::class),
         modules = arrayOf(
+                ActivityModule::class,
                 UserInfoModule::class))
 interface UserComponent : ActivityComponent {
+
     fun inject(activity: MainActivity)
 }

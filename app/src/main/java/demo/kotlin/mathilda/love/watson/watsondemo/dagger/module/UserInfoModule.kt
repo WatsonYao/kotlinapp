@@ -8,6 +8,9 @@ import dagger.Provides
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.ForActivity
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.ForApplication
 import demo.kotlin.mathilda.love.watson.watsondemo.domain.UserUsecase
+import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.Repository
+import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.RestRepository
+import rx.Scheduler
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -17,4 +20,9 @@ import javax.inject.Singleton
 @Module
 class UserInfoModule() {
 
+    @Provides
+    @ForActivity
+    fun provideUserInfoUsecase(repository: RestRepository): UserUsecase {
+        return UserUsecase(repository)
+    }
 }

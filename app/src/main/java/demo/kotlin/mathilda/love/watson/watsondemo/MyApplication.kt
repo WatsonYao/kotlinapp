@@ -1,11 +1,10 @@
 package demo.kotlin.mathilda.love.watson.watsondemo
 
 import android.app.Application
-import android.location.LocationManager
-import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.ApplicationComponent
-import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.DaggerApplicationComponent
+import com.facebook.stetho.Stetho
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.AppComponent
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.DaggerAppComponent
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.AndroidModule
-import javax.inject.Inject
 
 /**
  * Created by watson on 16/9/26.
@@ -13,15 +12,25 @@ import javax.inject.Inject
 class MyApplication : Application() {
 
     companion object {
-        //platformStatic allow access it from java code
-        @JvmStatic lateinit var graph: ApplicationComponent
+        @JvmStatic lateinit var graph: AppComponent
     }
 
 
     override fun onCreate() {
         super.onCreate()
-        graph = DaggerApplicationComponent.builder().androidModule(AndroidModule(this)).build()
-        graph.inject(this)
+        graph = DaggerAppComponent.builder().androidModule(AndroidModule(this)).build()
 
+        initDebug()
+    }
+
+    private fun initDebug() {
+        try {
+            Stetho.initialize(Stetho.newInitializerBuilder(this)
+                    .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                    .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                    .build())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
