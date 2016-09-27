@@ -38,6 +38,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxkotlin:0.60.0'
 
     // Square
     compile "com.squareup.retrofit2:retrofit:${libs.retrofit}"

@@ -1,6 +1,6 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.impls
 
-import demo.kotlin.mathilda.love.watson.watsondemo.model.User
+import demo.kotlin.mathilda.love.watson.watsondemo.model.Geek
 import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.BaseView
 
 /**
@@ -8,5 +8,5 @@ import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.BaseView
  */
 
 interface UserView : BaseView {
-    fun showUser(user: User);
+    fun showUser(user: Geek);
 }

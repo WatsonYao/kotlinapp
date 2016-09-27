@@ -1,11 +1,12 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.mvp.presenter.impls
 
-import android.view.View
 import demo.kotlin.mathilda.love.watson.watsondemo.WLog
-import demo.kotlin.mathilda.love.watson.watsondemo.model.User
 import demo.kotlin.mathilda.love.watson.watsondemo.domain.UserUsecase
+import demo.kotlin.mathilda.love.watson.watsondemo.model.Geek
+import demo.kotlin.mathilda.love.watson.watsondemo.model.NetNullError
 import demo.kotlin.mathilda.love.watson.watsondemo.mvp.presenter.BasePresenter
 import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.impls.UserView
+import rx.Subscription
 import javax.inject.Inject
 
 /**
@@ -13,21 +14,41 @@ import javax.inject.Inject
  */
 class UserPresenter : BasePresenter {
 
-    val userUsecase: UserUsecase
+    val usecase: UserUsecase
     lateinit var userView: UserView
+    private var subscription: Subscription? = null
 
     @Inject
     constructor(userUsecase: UserUsecase) {
-        this.userUsecase = userUsecase
+        this.usecase = userUsecase
     }
 
     fun bindView(view: UserView) {
         userView = view
     }
 
-    fun getUser() {
+    fun getGeek(name: String) {
+        userView.loading(true)
+        subscription = usecase.geek(name)
+                .subscribe(
+                        { this.geekResponse(it) },
+                        { this.showErrorView(it) }
+                )
+    }
+
+    private fun showErrorView(it: Throwable?) {
+        userView.loading(false)
+        it?.printStackTrace()
+        userView.showError(NetNullError())
         WLog.p().i("")
-        userView.showUser(userUsecase.getUser())
+    }
+
+    private fun geekResponse(it: Geek?) {
+        userView.loading(false)
+        WLog.p().i("-->" + it)
+        if (it != null) {
+            userView.showUser(it)
+        }
     }
 
 }

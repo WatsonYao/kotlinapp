@@ -7,4 +7,5 @@ import demo.kotlin.mathilda.love.watson.watsondemo.model.appErrors.AppError
  */
 interface BaseView {
     fun showError(e: AppError)
+    fun loading(loading: Boolean)
 }

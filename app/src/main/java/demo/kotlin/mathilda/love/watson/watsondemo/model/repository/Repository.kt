@@ -1,7 +1,6 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.model.repository
 
-import demo.kotlin.mathilda.love.watson.watsondemo.model.BaseResponse
-import demo.kotlin.mathilda.love.watson.watsondemo.model.User
+import demo.kotlin.mathilda.love.watson.watsondemo.model.Geek
 import rx.Observable
 
 /**
@@ -9,8 +8,6 @@ import rx.Observable
  */
 interface Repository {
 
-    fun getUser(): User
-
-    fun geek(name: String): Observable<BaseResponse>
+    fun geek(name: String): Observable<Geek>
 }
 

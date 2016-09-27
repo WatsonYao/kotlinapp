@@ -4,6 +4,7 @@ import android.content.Context
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import demo.kotlin.mathilda.love.watson.watsondemo.model.*
 import okhttp3.*
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
@@ -19,12 +20,13 @@ import javax.inject.Inject
 class RestRepository : Repository {
 
     val api: Api
-//    val apiSp: ApiSp
+    val apiSp: ApiSp
+    val context: Context
 
     @Inject
-    constructor(apiSp: ApiSp) {
-//        this.apiSp = apiSp
-
+    constructor(apiSp: ApiSp, context: Context) {
+        this.apiSp = apiSp
+        this.context = context
         val logginInterceptor = HttpLoggingInterceptor()
         logginInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
@@ -41,8 +43,8 @@ class RestRepository : Repository {
                     }
 
                 })
-//                .addInterceptor(provideOfflineCacheIntercepter())
-//                .addNetworkInterceptor(provideCacheInterceptor())
+                .addInterceptor(provideOfflineCacheIntercepter())
+                .addNetworkInterceptor(provideCacheInterceptor())
                 .cache(provideCache()).build()
 
 
@@ -56,36 +58,35 @@ class RestRepository : Repository {
         api = retrofit.create(Api::class.java)
     }
 
-//    fun getContext() = apiSp.getContext()
 
-//    fun provideOfflineCacheIntercepter(): Interceptor {
-//        return Interceptor { chain ->
-//            var request = chain.request()
-//            if (!Utils.checkIfHasNetwork(getContext())) {
-//                val cacheControl = CacheControl.Builder().maxStale(7, TimeUnit.DAYS).build()
-//
-//                request = request.newBuilder().cacheControl(cacheControl).build()
-//            }
-//            chain.proceed(request)
-//        }
-//    }
-//
-//    fun provideCacheInterceptor(): Interceptor {
-//        return Interceptor { chain ->
-//            val response = chain.proceed(chain.request())
-//
-//            var cacheControl: CacheControl? = null
-//
-//            if (!Utils.checkIfHasNetwork(getContext())) {
-//                cacheControl = CacheControl.Builder().maxAge(2, TimeUnit.MINUTES).build()
-//            } else {
-//                cacheControl = CacheControl.Builder().maxAge(0, TimeUnit.MINUTES).build()
-//            }
-//
-//
-//            response.newBuilder().header("Cache-Control", cacheControl!!.toString()).build()
-//        }
-//    }
+    fun provideOfflineCacheIntercepter(): Interceptor {
+        return Interceptor { chain ->
+            var request = chain.request()
+            if (!Utils.checkIfHasNetwork(context)) {
+                val cacheControl = CacheControl.Builder().maxStale(7, TimeUnit.DAYS).build()
+
+                request = request.newBuilder().cacheControl(cacheControl).build()
+            }
+            chain.proceed(request)
+        }
+    }
+
+    fun provideCacheInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val response = chain.proceed(chain.request())
+
+            var cacheControl: CacheControl?
+
+            if (!Utils.checkIfHasNetwork(context)) {
+                cacheControl = CacheControl.Builder().maxAge(2, TimeUnit.MINUTES).build()
+            } else {
+                cacheControl = CacheControl.Builder().maxAge(0, TimeUnit.MINUTES).build()
+            }
+
+
+            response.newBuilder().header("Cache-Control", cacheControl!!.toString()).build()
+        }
+    }
 
     private fun provideCache(): Cache? {
         var cache: Cache? = null
@@ -98,12 +99,7 @@ class RestRepository : Repository {
         return cache
     }
 
-    override fun getUser(): User {
-        return User("watson", 30)
-    }
-
-
-    override fun geek(name: String): Observable<BaseResponse> {
+    override fun geek(name: String): Observable<Geek> {
         return api.geek(name)
     }
 

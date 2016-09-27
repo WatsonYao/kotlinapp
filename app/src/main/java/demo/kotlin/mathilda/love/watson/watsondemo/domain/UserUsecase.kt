@@ -1,30 +1,33 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.domain
 
-import demo.kotlin.mathilda.love.watson.watsondemo.model.BaseResponse
-import demo.kotlin.mathilda.love.watson.watsondemo.model.User
+import demo.kotlin.mathilda.love.watson.watsondemo.model.Geek
 import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.Repository
-import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.RestRepository
 import rx.Observable
+import rx.Scheduler
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * Created by watson on 16/9/26.
  */
 class UserUsecase : Usecase {
 
-    lateinit var repository: RestRepository
+    val uiThread: Scheduler
+    val executorThread: Scheduler
+
+    lateinit var repository: Repository
 
     //
     @Inject
-    constructor(repository: RestRepository) {
+    constructor(repository: Repository,
+                @Named("ui_thread") uiThread: Scheduler,
+                @Named("executor_thread") executorThread: Scheduler) {
         this.repository = repository
+        this.uiThread = uiThread
+        this.executorThread = executorThread
     }
 
-    fun getUser(): User {
-        return User("a", 1)
-    }
-
-    fun geek(name: String): Observable<BaseResponse> {
-        return repository.geek(name)
+    fun geek(name: String): Observable<Geek> {
+        return repository.geek(name).observeOn(uiThread).subscribeOn(executorThread)
     }
 }

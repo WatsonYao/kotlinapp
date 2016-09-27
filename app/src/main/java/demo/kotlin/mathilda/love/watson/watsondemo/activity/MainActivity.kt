@@ -3,17 +3,24 @@ package demo.kotlin.mathilda.love.watson.watsondemo.activity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.Toolbar
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import demo.kotlin.mathilda.love.watson.watsondemo.WLog
+import android.view.View
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import demo.kotlin.mathilda.love.watson.watsondemo.R
+import demo.kotlin.mathilda.love.watson.watsondemo.WLog
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.AppComponent
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.DaggerUserComponent
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.ActivityModule
 import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.UserInfoModule
-import demo.kotlin.mathilda.love.watson.watsondemo.model.User
+import demo.kotlin.mathilda.love.watson.watsondemo.model.EditTextNullError
+import demo.kotlin.mathilda.love.watson.watsondemo.model.Geek
 import demo.kotlin.mathilda.love.watson.watsondemo.model.appErrors.AppError
 import demo.kotlin.mathilda.love.watson.watsondemo.mvp.presenter.impls.UserPresenter
+import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.bindView
 import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.impls.UserView
 import rx.Single
 import rx.SingleSubscriber
@@ -25,6 +32,19 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity(), UserView {
 
+    override fun loading(show: Boolean) {
+        loading.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    @Inject
+    lateinit var presenter: UserPresenter
+
+    val info: TextView by bindView(R.id.info)
+    val name: EditText by bindView(R.id.name)
+    val fab: FloatingActionButton by bindView(R.id.fab)
+    val toolbar: Toolbar by bindView(R.id.toolbar)
+    val loading: ProgressBar by bindView(R.id.loading)
+
     override fun setupActivityComponent(appComponent: AppComponent) {
         DaggerUserComponent.builder()
                 .appComponent(appComponent)
@@ -33,52 +53,40 @@ class MainActivity : BaseActivity(), UserView {
                 .build().inject(this)
     }
 
-    override fun showUser(user: User) {
-
+    override fun showUser(geek: Geek) {
+        info.text = geek.toString()
     }
 
     override fun showError(e: AppError) {
-
+        showBaseError(e)
     }
-
-    @Inject
-    lateinit var presenter: UserPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
         presenter.bindView(this)
 
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
-
-        val fab = findViewById(R.id.fab) as FloatingActionButton
         fab.setOnClickListener {
             view ->
-            test3()
-            presenter.getUser()
-            //Snackbar.m、ake(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            if (!TextUtils.isEmpty(name.text.toString().trim())) {
+                presenter.getGeek(name.text.toString().trim())
+            } else {
+                showError(EditTextNullError())
+            }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true
         }
-
         return super.onOptionsItemSelected(item)
     }
 

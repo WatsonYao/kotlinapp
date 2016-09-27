@@ -1,6 +1,7 @@
 package demo.kotlin.mathilda.love.watson.watsondemo.model
 
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import rx.Observable
 
@@ -10,5 +11,5 @@ import rx.Observable
 interface Api {
 
     @GET("/users/{username}")
-    fun geek(@Query("username") username: String): Observable<BaseResponse>
+    fun geek(@Path("username") username: String): Observable<Geek>
 }

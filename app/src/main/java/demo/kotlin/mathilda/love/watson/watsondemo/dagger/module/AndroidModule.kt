@@ -8,6 +8,10 @@ import demo.kotlin.mathilda.love.watson.watsondemo.dagger.ForApplication
 import demo.kotlin.mathilda.love.watson.watsondemo.model.ApiSp
 import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.Repository
 import demo.kotlin.mathilda.love.watson.watsondemo.model.repository.RestRepository
+import rx.Scheduler
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -37,9 +41,22 @@ class AndroidModule(private val application: MyApplication) {
 
     @Provides
     @Singleton
-    fun provideDataRepository(restRepository: RestRepository): RestRepository {
+    fun provideRepository(restRepository: RestRepository): Repository {
         return restRepository
     }
+
+    @Provides
+    @Named("executor_thread")
+    fun provideExecutorThread(): Scheduler {
+        return Schedulers.newThread()
+    }
+
+    @Provides
+    @Named("ui_thread")
+    fun provideUiThread(): Scheduler {
+        return AndroidSchedulers.mainThread()
+    }
+
 
 //    @Provides
 //    @Singleton

@@ -22,7 +22,9 @@ class UserInfoModule() {
 
     @Provides
     @ForActivity
-    fun provideUserInfoUsecase(repository: RestRepository): UserUsecase {
-        return UserUsecase(repository)
+    fun provideUserInfoUsecase(repository: Repository,
+                               @Named("ui_thread") uiThread: Scheduler,
+                               @Named("executor_thread") executorThread: Scheduler): UserUsecase {
+        return UserUsecase(repository, uiThread, executorThread)
     }
 }
