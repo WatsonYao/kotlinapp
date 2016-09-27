@@ -10,7 +10,7 @@ import android.util.Log
  *
  * @author Administrator
  */
-class MyLoggerK private constructor(name: String) {
+class WLog private constructor(name: String) {
 
     private val logFlag = true
     val tag = "kwapp"
@@ -22,7 +22,7 @@ class MyLoggerK private constructor(name: String) {
     }
 
     companion object {
-        fun create(): MyLoggerK = MyLoggerK("@")
+        fun p(): WLog = WLog("@")
     }
 
 

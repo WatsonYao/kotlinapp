@@ -1,25 +1,51 @@
-package demo.kotlin.mathilda.love.watson.watsondemo
+package demo.kotlin.mathilda.love.watson.watsondemo.activity
 
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.View
 import android.view.Menu
 import android.view.MenuItem
+import demo.kotlin.mathilda.love.watson.watsondemo.WLog
+import demo.kotlin.mathilda.love.watson.watsondemo.R
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.ApplicationComponent
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.component.DaggerUserComponent
+import demo.kotlin.mathilda.love.watson.watsondemo.dagger.module.UserInfoModule
+import demo.kotlin.mathilda.love.watson.watsondemo.model.User
+import demo.kotlin.mathilda.love.watson.watsondemo.model.appErrors.AppError
+import demo.kotlin.mathilda.love.watson.watsondemo.mvp.presenter.impls.UserPresenter
+import demo.kotlin.mathilda.love.watson.watsondemo.mvp.view.impls.UserView
 import rx.Single
 import rx.SingleSubscriber
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Func1
 import rx.schedulers.Schedulers
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity(), UserView {
+    override fun setupActivityComponent(appComponent: ApplicationComponent) {
+//        MyApplication.graph.inject(this)
+        DaggerUserComponent.builder()
+                .userInfoModule(UserInfoModule())
+                .build().inject(this)
+    }
+
+
+    override fun showUser(user: User) {
+    }
+
+    override fun showError(e: AppError) {
+
+    }
+
+    @Inject
+    lateinit var presenter: UserPresenter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        presenter.bindView(this)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
@@ -28,7 +54,8 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener {
             view ->
             test3()
-            //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            presenter.getUser()
+            //Snackbar.m、ake(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
         }
 
     }
@@ -57,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         Single.just(2).subscribe(object : SingleSubscriber<Int>() {
             override fun onSuccess(value: Int?) {
                 // value = 3
-                MyLoggerK.create().i("value->" + value)
+                WLog.p().i("value->" + value)
             }
 
             override fun onError(error: Throwable) {
@@ -77,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         }).subscribe(object : SingleSubscriber<String>() {
             override fun onSuccess(value: String) {
                 // value = 5
-                MyLoggerK.create().i("value->" + value)
+                WLog.p().i("value->" + value)
             }
 
             override fun onError(error: Throwable) {
@@ -105,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onNext(o: Int?) {
                         // o = 3
-                        MyLoggerK.create().i("o->" + o)
+                        WLog.p().i("o->" + o)
                     }
                 })
     }
